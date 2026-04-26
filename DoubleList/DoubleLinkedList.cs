@@ -2,7 +2,7 @@
 
 namespace DoubleList;
 
-public class DoubleLinkedList<T> : ILinkedList<T>
+public class DoubleLinkedList<T> : ILinkedList<T> where T : IComparable<T>
 {
     private Node<T>? _head;
     private Node<T>? _tail;
@@ -15,7 +15,16 @@ public class DoubleLinkedList<T> : ILinkedList<T>
 
     public bool Contains(T data)
     {
-        throw new NotImplementedException();
+        var current = _head;
+        while (current != null)
+        {
+            if (current.Data != null && current.Data.Equals(data))
+            {
+                return true;
+            }
+            current = current.Next;
+        }
+        return false;
     }
 
     public void InsertAtBeginning(T data)
@@ -52,8 +61,34 @@ public class DoubleLinkedList<T> : ILinkedList<T>
 
     public void InsertOrdered(T data)
     {
-        throw new NotImplementedException();
+        var newNode = new Node<T>(data);
+        if (_head == null)
+        {
+            _head = newNode;
+            _tail = newNode;
+            return;
+        }
+        if (data.CompareTo(_head.Data) < 0)
+        {
+            newNode.Next =_head;
+            newNode.Previous = null;
+            _head = newNode;
+           
+            return;
+        }
+        var current = _head;
+
+        while (current.Next != null && current.Next.Data.CompareTo(data) < 0)
+        {
+            current = current.Next;
+        }
+        newNode.Next = current.Next;
+        newNode.Previous = current;
+        current.Next?.Previous = newNode;
+        current.Next = newNode;
     }
+
+
 
     public void Remove(T data)
     {
@@ -85,13 +120,48 @@ public class DoubleLinkedList<T> : ILinkedList<T>
 
     public void Reverse()
     {
-        throw new NotImplementedException();
+        var current = _head;
+        while (current != null)
+        {
+            var next = current.Next;
+            current.Next = current.Previous;
+            current.Previous = next;
+            current = next;
+        }
+       var exchange = _head;
+        _head= _tail;
+        _tail = exchange;
     }
+    
 
     public void Sort()
     {
-        throw new NotImplementedException();
+        if (_head == null) return;
+
+        bool swapped;
+
+        do
+        {
+            swapped = false;
+            var current = _head;
+
+            while (current.Next != null)
+            {
+                if (current.Data.CompareTo(current.Next.Data) > 0)
+                {
+                    var temp = current.Data;
+                    current.Data = current.Next.Data;
+                    current.Next.Data = temp;
+
+                    swapped = true;
+                }
+
+                current = current.Next;
+            }
+
+        } while (swapped);
     }
+    
 
     override public string ToString()
     {

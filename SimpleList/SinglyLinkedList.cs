@@ -2,7 +2,7 @@
 
 namespace SimpleList;
 
-public class SinglyLinkedList<T> : ILinkedList<T>
+public class SinglyLinkedList<T> : ILinkedList<T> where T : IComparable<T>
 {
     private Node<T>? _head;
 
@@ -97,11 +97,54 @@ public class SinglyLinkedList<T> : ILinkedList<T>
 
     public void InsertOrdered(T data)
     {
-        throw new NotImplementedException();
+        var newNode = new Node<T>(data);
+        if (_head == null)
+        {
+            _head = newNode;
+            return;
+        }
+
+        if (data.CompareTo(_head.Data) < 0)
+        {
+            newNode.Next = _head;
+            _head = newNode;
+            return;
+        }
+        var current = _head;
+
+        while (current.Next != null && current.Next.Data.CompareTo(data) < 0)
+        {
+            current = current.Next;
+        }
+        newNode.Next = current.Next;
+        current.Next = newNode;
     }
 
     public void Sort()
     {
-        throw new NotImplementedException();
+        if (_head == null) return;
+
+        bool swapped;
+
+        do
+        {
+            swapped = false;
+            var current = _head;
+
+            while (current.Next != null)
+            {
+                if (current.Data.CompareTo(current.Next.Data) > 0)
+                {
+                    var temp = current.Data;
+                    current.Data = current.Next.Data;
+                    current.Next.Data = temp;
+
+                    swapped = true;
+                }
+
+                current = current.Next;
+            }
+
+        } while (swapped);
     }
 }
